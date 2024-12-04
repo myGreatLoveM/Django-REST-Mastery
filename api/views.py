@@ -25,14 +25,15 @@ def get_single_product(request, pk):
 
 @api_view(['GET'])
 def get_all_orders(request):
-    orders = Order.objects.all()
+    orders = Order.objects.prefetch_related("items__product")
     serializer = OrderSerializer(orders, many=True)
     return Response(serializer.data)
 
 
 @api_view(['GET'])
 def get_single_order(request, pk):
-    order = get_object_or_404(Order, pk=pk)
+    # order = get_object_or_404(Order, pk=pk)
+    order = Order.objects.prefetch_related("items__product").get(pk=pk)
     serializer = OrderSerializer(order)
     return Response(serializer.data)
 
