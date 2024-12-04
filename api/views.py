@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 from .models import Product, Order
 from .serializers import OrderSerializer, ProductSerializer, ProductInfoSerializer
 
@@ -40,6 +41,25 @@ class UserOrderDetailAPIView(generics.ListAPIView):
         return super().get_queryset().filter(user=self.request.user)
 
 
+class ProductInfoAPIView(APIView):
+    def get(self, request):
+        products = Product.objects.all()
+        price_info = products.aggregate(
+            max_price=Max('price'),
+            min_price=Min('price'),
+            avg_price=Avg('price'),
+        )
+        serializer = ProductInfoSerializer({
+            'products': products,
+            'no_of_product': len(products),
+            'max_price': price_info.get('max_price'),
+            'min_price': price_info.get('min_price'),
+            'avg_price': price_info.get('avg_price'),
+        })
+        return Response(serializer.data)
+
+
+
 # @api_view(['GET'])
 # def get_all_products(request):
 #     products = Product.objects.all()
@@ -71,22 +91,22 @@ class UserOrderDetailAPIView(generics.ListAPIView):
 #     return Response(serializer.data)
 
 
-@api_view(['GET'])
-def get_products_info(request):
-    products = Product.objects.all()
-    price_info = products.aggregate(
-        max_price=Max('price'),
-        min_price=Min('price'),
-        avg_price=Avg('price'),
-    )
-    serializer = ProductInfoSerializer({
-        'products': products,
-        'no_of_product': len(products),
-        'max_price': price_info.get('max_price'),
-        'min_price': price_info.get('min_price'),
-        'avg_price': price_info.get('avg_price'),
-    })
-    return Response(serializer.data)
+# @api_view(['GET'])
+# def get_products_info(request):
+#     products = Product.objects.all()
+#     price_info = products.aggregate(
+#         max_price=Max('price'),
+#         min_price=Min('price'),
+#         avg_price=Avg('price'),
+#     )
+#     serializer = ProductInfoSerializer({
+#         'products': products,
+#         'no_of_product': len(products),
+#         'max_price': price_info.get('max_price'),
+#         'min_price': price_info.get('min_price'),
+#         'avg_price': price_info.get('avg_price'),
+#     })
+#     return Response(serializer.data)
 
 
 
