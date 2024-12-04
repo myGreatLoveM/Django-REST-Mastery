@@ -3,6 +3,7 @@ from django.db.models import Max, Min, Avg
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 from .models import Product, Order
 from .serializers import OrderSerializer, ProductSerializer, ProductInfoSerializer
 
@@ -33,6 +34,7 @@ class OrderDetailAPIView(generics.RetrieveAPIView):
 class UserOrderDetailAPIView(generics.ListAPIView):
     queryset = Order.objects.prefetch_related('items__product')
     serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return super().get_queryset().filter(user=self.request.user)
