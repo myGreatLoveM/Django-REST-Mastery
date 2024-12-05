@@ -3,16 +3,52 @@ from django.db.models import Max, Min, Avg
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.views import APIView
+from rest_framework import status
 from .models import Product, Order
-from .serializers import OrderSerializer, ProductSerializer, ProductInfoSerializer
+from .serializers import OrderSerializer, ProductCreateSerializer, ProductSerializer, ProductInfoSerializer
 
 
-
-class ProductListAPIView(generics.ListAPIView):
-    queryset = Product.objects.filter(stock__gt=0)
+class ProductListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        if self.request.method == 'GET':
+            return super().get_queryset().filter(stock__gt=0)
+        return super().get_queryset()
+    
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            self.permission_classes = [IsAdminUser]
+        return super().get_permissions()
+    
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            self.serializer_class = ProductCreateSerializer
+        return super().get_serializer_class()
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response({
+            "data": {
+                "no_of_products": len(queryset),
+                "products": serializer.data
+            }
+        }, status=status.HTTP_200_OK)
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exceptions=True)
+        serializer.save()
+        return Response({
+            "message": "product created successfully",
+            "product": serializer.data
+        }, status=status.HTTP_201_CREATED)
 
 
 class ProductDetailAPIView(generics.RetrieveAPIView):
@@ -57,6 +93,24 @@ class ProductInfoAPIView(APIView):
             'avg_price': price_info.get('avg_price'),
         })
         return Response(serializer.data)
+
+
+# class ProductListAPIView(generics.ListAPIView):
+#     queryset = Product.objects.filter(stock__gt=0)
+#     serializer_class = ProductSerializer
+
+#     def list(self, request, *args, **kwargs):
+#         return super().list(request, *args, **kwargs)
+
+
+# class ProductCreateAPIView(generics.CreateAPIView):
+#     queryset = Product.objects.all()
+#     serializer_class = ProductCreateSerializer
+
+#     def create(self, request, *args, **kwargs):
+#         print(request.data)
+#         return super().create(request, *args, **kwargs)
+
 
 
 

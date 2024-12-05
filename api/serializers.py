@@ -19,6 +19,32 @@ class ProductSerializer(serializers.ModelSerializer):
             )
         return value
 
+class ProductCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = (
+            'name',
+            'price',
+            'stock',
+            'description',
+        )
+
+    def validate_stock(self, value):
+        if value < 0:
+            raise serializers.ValidationError(
+                "Stock must be greater than or equal to 0"
+            )
+        return value
+
+    def validate_price(self, value):
+        if value <= 0:
+            raise serializers.ValidationError(
+                "Price must be greater than 0"
+            )
+        return value
+    
+    
+
 
 class OrderItemSerializer(serializers.ModelSerializer):
     # product = ProductSerializer(read_only=True)
