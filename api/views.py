@@ -43,7 +43,7 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exceptions=True)
+        serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({
             "message": "product created successfully",

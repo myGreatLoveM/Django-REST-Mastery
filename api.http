@@ -1,0 +1,40 @@
+GET http://localhost:8000/api/products/
+
+### 
+
+POST http://localhost:8000/api/token/
+Content-Type: application/json
+
+{
+    "username": "prem",
+    "password": "1234"
+}
+
+
+###
+POST http://localhost:8000/api/token/refresh/
+Content-Type: application/json
+
+{
+    "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTczMzQ4ODUxOSwiaWF0IjoxNzMzNDAyMTE5LCJqdGkiOiI4ZGY3NmIwNDExOGQ0YzdjOGQ1Mzg4MTY4YTY3NjgxMyIsInVzZXJfaWQiOjJ9.LPRssc7HPJHIVx3xQijDbh1YDIqf1wLclnyp8MhVr2M"
+}
+
+
+
+###
+POST http://localhost:8000/api/products/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzMzNDAzMDk1LCJpYXQiOjE3MzM0MDIxMTksImp0aSI6IjNkMmQ0NzdlODUyMjQwZmRiODJhZDg3N2JkYTdmNTg1IiwidXNlcl9pZCI6Mn0.6FRMcnyZjvKuHUQg58YxPknBmjP3rPelZZQEqo7v94A
+
+{
+    "name": "product 4",
+    "description": "nvskjdvk kvnkjdvj kvkvn kkjdv",
+    "price": 200,
+    "stock": 10
+}
+
+
+###
+
+GET http://localhost:8000/api/user-orders/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzMzNDAzMDk1LCJpYXQiOjE3MzM0MDIxMTksImp0aSI6IjNkMmQ0NzdlODUyMjQwZmRiODJhZDg3N2JkYTdmNTg1IiwidXNlcl9pZCI6Mn0.6FRMcnyZjvKuHUQg58YxPknBmjP3rPelZZQEqo7v94A
